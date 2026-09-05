@@ -2,8 +2,8 @@ import type { GameKind, GameState, HeartItem, PlayerPublic } from '../shared/typ
 import { answersMatch } from './roomRules.js';
 
 const QUESTIONS = [
-  { id: 'date', prompt: 'Where would Hamougo take Mimo on a perfect date?', choices: ['A sunset picnic', 'An arcade', 'A moonlit beach'] },
-  { id: 'comfort', prompt: 'What makes Mimo happiest after a long day?', choices: ['A sweet message', 'A surprise gift', 'A funny story'] },
+  { id: 'date', prompt: 'Where would Mahmihoo take Mayada on a perfect date?', choices: ['A sunset picnic', 'An arcade', 'A moonlit beach'] },
+  { id: 'comfort', prompt: 'What makes Mayada happiest after a long day?', choices: ['A sweet message', 'A surprise gift', 'A funny story'] },
   { id: 'future', prompt: 'Which little dream should we do together first?', choices: ['Travel somewhere new', 'Make a cozy home', 'Watch the stars'] }
 ];
 

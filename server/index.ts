@@ -3,6 +3,7 @@ import { resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import express from 'express';
 import cors from 'cors';
+import { generateText, gateway } from 'ai';
 import { Server, type Socket } from 'socket.io';
 import type { ChatMessage, GameKind, MemoryCard, PlayerPublic, PlayerSession, ProfileDraft, RoomSnapshot } from '../shared/types.js';
 import { canCollectHeart, emptyGame, makeHeart, resolveAnswer, startGame } from './game.js';
@@ -29,6 +30,20 @@ export function createRealtimeServer(options: { databasePath?: string; origins?:
   app.use(cors({ origin: options.origins ?? originList, credentials: false }));
   app.get('/api/health', (_request, response) => response.json({ ok: true, service: 'our-little-world' }));
   app.get('/api/config', (_request, response) => response.json({ stunUrl: process.env.VITE_STUN_URL ?? 'stun:stun.l.google.com:19302' }));
+  app.post('/api/love-ai', async (request, response) => {
+    const message = typeof request.body?.message === 'string' ? request.body.message.trim().slice(0, 500) : '';
+    if (!message) return response.status(400).json({ error: 'A message is required.' });
+    try {
+      const result = await generateText({
+        model: gateway('anthropic/claude-sonnet-4.6'),
+        system: 'You are Love AI Companion for Mahmihoo and Mayada. Reply warmly in 2 concise sentences, offer one practical long-distance relationship idea, and never claim to be a human.',
+        prompt: message
+      });
+      return response.json({ reply: result.text });
+    } catch {
+      return response.status(503).json({ error: 'Love AI is resting. Try again in a moment.' });
+    }
+  });
 
   const httpServer = createServer(app);
   const io = new Server(httpServer, {
@@ -221,7 +236,7 @@ export function createRealtimeServer(options: { databasePath?: string; origins?:
       if (!heart) return;
       room.game.hearts = room.game.hearts.filter((item) => item.id !== heart.id);
       const points = heart.cooperative ? 25 : heart.value;
-      award(room, points, heart.cooperative ? 'Perfect teamwork!' : 'A little heart collected', heart.cooperative ? 'Mimo & Hamougo reached a heart together.' : `${player.displayName} found a heart in the garden.`);
+      award(room, points, heart.cooperative ? 'Perfect teamwork!' : 'A little heart collected', heart.cooperative ? 'Mahmihoo & Mayada reached a heart together.' : `${player.displayName} found a heart in the garden.`);
       io.to(room.code).emit('game:notice', { text: heart.cooperative ? '✨ Together! +25 hearts' : `❤️ +${points} love points` });
       broadcastSnapshot(room);
     });
@@ -234,7 +249,7 @@ export function createRealtimeServer(options: { databasePath?: string; origins?:
       const match = connected.length === 2 ? resolveAnswer(room.game, connected) : null;
       if (match === null) { socket.emit('game:notice', { text: 'Answer saved — waiting for your other half…' }); return; }
       if (match) {
-        award(room, 75, 'Two hearts, one answer', 'Mimo & Hamougo chose the same little dream.');
+        award(room, 75, 'Two hearts, one answer', 'Mahmihoo & Mayada chose the same little dream.');
         io.to(room.code).emit('game:notice', { text: '✨ LOVE MATCH! +75 love points' });
       } else io.to(room.code).emit('game:notice', { text: 'Different answers — now you have something sweet to talk about.' });
       room.game.submissions = {};
@@ -267,7 +282,7 @@ export function createRealtimeServer(options: { databasePath?: string; origins?:
         rose.waterPlayer ??= player.id; rose.water = Math.min(5, rose.water + 1);
       }
       if (!rose.grown && rose.sunlight >= 5 && rose.water >= 5) {
-        rose.grown = true; award(room, 125, 'Our rose bloomed', 'Mimo & Hamougo grew something beautiful together.');
+        rose.grown = true; award(room, 125, 'Our rose bloomed', 'Mahmihoo & Mayada grew something beautiful together.');
         io.to(room.code).emit('game:notice', { text: '🌹 Your magical rose bloomed! +125 love points' });
       }
       broadcastSnapshot(room);
@@ -280,7 +295,7 @@ export function createRealtimeServer(options: { databasePath?: string; origins?:
     socket.on('draw:clear', () => { const room = roomFor(socket); if (room?.game.kind === 'draw-together') io.to(room.code).emit('draw:clear'); });
     socket.on('draw:save', () => {
       const room = roomFor(socket); if (!room || room.game.kind !== 'draw-together' || !withinRate(socket, 'drawingSave', 2, 60_000)) return;
-      addMemory(room, 'A drawing made together', 'A shared little masterpiece from Mimo & Hamougo.');
+      addMemory(room, 'A drawing made together', 'A shared little masterpiece from Mahmihoo & Mayada.');
       award(room, 50);
       io.to(room.code).emit('game:notice', { text: '🎨 Your drawing is now a memory. +50 love points' }); broadcastSnapshot(room);
     });
@@ -290,7 +305,7 @@ export function createRealtimeServer(options: { databasePath?: string; origins?:
       const together = [...room.players.values()].filter((player) => player.connected);
       // The crystal is at the same shared coordinate in the 2D map and Three.js forest.
       if (together.length !== 2 || together.some((player) => Math.hypot(player.x - 600, player.y - 380) > 150)) return;
-      room.crystalCollected = true; award(room, 500, 'The Heart Crystal', 'Together, Mimo & Hamougo brought light back to the magical forest.');
+      room.crystalCollected = true; award(room, 500, 'The Heart Crystal', 'Together, Mahmihoo & Mayada brought light back to the magical forest.');
       room.unlocked = store.unlock(room.code, 'memory-castle');
       io.to(room.code).emit('game:notice', { text: '💎 Heart Crystal found together! +500 love points' }); broadcastSnapshot(room);
     });

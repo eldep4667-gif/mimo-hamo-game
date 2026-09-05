@@ -16,7 +16,7 @@ export function sanitizeProfile(input: unknown): { ok: true; value: { displayNam
 export function sanitizeCode(value: unknown): string | null {
   if (typeof value !== 'string') return null;
   const code = value.trim().toUpperCase();
-  return /^MIMO-HAMO-[A-Z0-9]{6}$/.test(code) ? code : null;
+  return /^MAHMIHOO-MAYADA-[A-Z0-9]{6}$/.test(code) ? code : null;
 }
 
 export function clampMotion(previous: PlayerPublic, candidate: unknown, elapsedMs: number): WorldMotion | null {
@@ -41,5 +41,5 @@ export function makeRoomCode(random = Math.random): string {
   const alphabet = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
   let suffix = '';
   for (let index = 0; index < 6; index += 1) suffix += alphabet[Math.floor(random() * alphabet.length)];
-  return `MIMO-HAMO-${suffix}`;
+  return `MAHMIHOO-MAYADA-${suffix}`;
 }
