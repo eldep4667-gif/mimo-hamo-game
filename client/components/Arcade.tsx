@@ -10,8 +10,8 @@ const PLAYABLE: Array<{ kind: GameKind; icon: string; title: string; text: strin
 ];
 
 export function Arcade({ game, onPlay, onClose }: { game: GameState; onPlay(kind: GameKind): void; onClose(): void }) {
-  return <section className="arcade-overlay" role="dialog" aria-modal="true" aria-label="Our Arcade">
-    <div className="arcade-sheet"><button className="close" onClick={onClose}>×</button><p className="eyebrow">Six playable little adventures</p><h2>Our Arcade <span>♥</span></h2><p className="arcade-intro">Choose a game together. Points and memories are recorded in your shared world.</p>
+  return <section className="arcade-overlay" role="dialog" aria-modal="true" aria-label="محاميحو & ميادة Arcade">
+    <div className="arcade-sheet"><button className="close" onClick={onClose}>×</button><p className="eyebrow">Six playable little adventures</p><h2>محاميحو & ميادة Arcade <span>♥</span></h2><p className="arcade-intro">Choose a game together. Points and memories are recorded in your shared world.</p>
       <div className="game-grid">{PLAYABLE.map((item) => <article className={`game-card ${game.kind === item.kind ? 'active' : ''}`} key={item.kind}><span className="game-icon">{item.icon}</span><div><h3>{item.title}</h3><p>{item.text}</p><small>Two players · {item.reward} love points</small></div><button className="primary" onClick={() => onPlay(item.kind)}>{game.kind === item.kind ? 'Playing now' : 'Play together'}</button></article>)}</div>
       <p className="arcade-footer">The next chapter will grow this arcade into twenty adventures—these six are already live, synced, and playable now.</p>
     </div>
