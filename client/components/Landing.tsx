@@ -29,7 +29,7 @@ export function Landing({ inviteCode, busy, error, onCreate, onJoin }: LandingPr
     <div className="star-field" aria-hidden="true" />
     <section className="landing-copy">
       <p className="eyebrow">A private place for two</p>
-      <h1>محاميحو <span>&amp;</span> ميادة</h1>
+      <h1><span className="arabic-name">محاميحو</span> <span>&amp;</span> <span className="arabic-name">ميادة</span></h1>
       <p className="landing-subtitle">Our Little World <b>♥</b></p>
       <p className="landing-note">Even when we’re far away, we can still meet here.</p>
       <div className="heart-orbit" aria-hidden="true"><i>♥</i><i>♥</i></div>

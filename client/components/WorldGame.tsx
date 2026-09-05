@@ -105,15 +105,18 @@ class LittleWorldScene extends Phaser.Scene {
   }
   private createAvatar(player: PlayerPublic, x: number, y: number): Avatar {
     const body = this.add.container(0, 0);
-    const shadow = this.add.ellipse(0, 28, 56, 16, 0x130a25, .25);
-    const glow = this.add.circle(0, 0, 38, Phaser.Display.Color.HexStringToColor(player.color).color, .18);
-    const torso = this.add.ellipse(0, 12, 30, 37, player.character === 'mimo' ? 0xf0a3ba : 0x7786db);
-    const head = this.add.circle(0, -17, 20, player.character === 'mimo' ? 0xffdcc8 : 0xe3b99b);
-    const hair = this.add.arc(0, -22, 22, 190, 350, false, player.character === 'mimo' ? 0x5a254f : 0x35233f, 1).setStrokeStyle(7, player.character === 'mimo' ? 0x5a254f : 0x35233f);
-    const badge = this.add.text(23, -29, player.emoji, { fontSize: '19px' }).setOrigin(.5);
-    const label = this.add.text(0, 48, player.displayName, { fontFamily: 'Nunito, sans-serif', fontSize: '15px', color: '#fff6e9', stroke: '#251231', strokeThickness: 4 }).setOrigin(.5);
-    body.add([shadow, glow, torso, head, hair, badge, label]); body.setPosition(x, y); body.setSize(70, 90);
-    this.tweens.add({ targets: body, y: y - 3, duration: 900, yoyo: true, repeat: -1, ease: 'Sine.inOut' });
+    const shadow = this.add.ellipse(0, 35, 74, 19, 0x0d0718, .42);
+    const aura = this.add.circle(0, -4, 48, Phaser.Display.Color.HexStringToColor(player.color).color, .12);
+    const cape = this.add.ellipse(0, 20, 43, 52, player.character === 'mimo' ? 0x9a456e : 0x46579d, .95);
+    const coat = this.add.ellipse(0, 17, 32, 44, player.character === 'mimo' ? 0xf1a2b8 : 0x7386d6, 1);
+    const face = this.add.circle(0, -18, 22, player.character === 'mimo' ? 0xffd7c0 : 0xe6b99f, 1);
+    const hair = this.add.arc(0, -23, 24, 186, 355, false, player.character === 'mimo' ? 0x40213e : 0x201b37, 1).setStrokeStyle(8, player.character === 'mimo' ? 0x40213e : 0x201b37);
+    const eyeL = this.add.circle(-7, -16, 2, 0x211326); const eyeR = this.add.circle(7, -16, 2, 0x211326);
+    const scarf = this.add.rectangle(0, 1, 30, 6, 0xf8d58d, .9);
+    const badge = this.add.text(28, -35, player.emoji, { fontSize: '18px' }).setOrigin(.5);
+    const label = this.add.text(0, 56, `${player.speaking ? '✦ ' : ''}${player.displayName}`, { fontFamily: 'DM Sans, sans-serif', fontSize: '14px', fontStyle: 'bold', color: '#fff5df', stroke: '#171024', strokeThickness: 5 }).setOrigin(.5);
+    body.add([shadow, aura, cape, coat, face, hair, eyeL, eyeR, scarf, badge, label]); body.setPosition(x, y); body.setSize(82, 110);
+    this.tweens.add({ targets: body, y: y - 4, duration: 1_200, yoyo: true, repeat: -1, ease: 'Sine.inOut' });
     return { group: body, label, targetX: x, targetY: y, player };
   }
   private syncHearts(hearts: { id: string; x: number; y: number; cooperative: boolean }[], visible: boolean) {
@@ -137,17 +140,19 @@ class LittleWorldScene extends Phaser.Scene {
   }
   private drawEnvironment() {
     const g = this.add.graphics();
-    g.fillGradientStyle(0x513760, 0x513760, 0xf28c83, 0xf8b76f, 1); g.fillRect(0, 0, 1200, 760);
-    g.fillStyle(0x2b1740, .72); g.fillCircle(1010, 115, 55); g.fillStyle(0xffd9a1, .98); g.fillCircle(1000, 108, 48);
-    for (let i = 0; i < 60; i += 1) { g.fillStyle(0xffefd1, Math.random() * .55 + .15); g.fillCircle(Math.random() * 1200, Math.random() * 320, Math.random() * 2.2 + .4); }
-    g.fillStyle(0x375c4f, 1); g.fillEllipse(610, 688, 1500, 400);
-    g.fillStyle(0x274b47, 1); g.fillEllipse(610, 734, 1450, 260);
-    g.fillStyle(0x59828b, .9); g.fillEllipse(585, 500, 310, 220);
-    g.lineStyle(11, 0xeac18c, 1); g.beginPath(); g.moveTo(430, 465); g.lineTo(735, 540); g.strokePath();
-    g.fillStyle(0x694138, 1); g.fillRoundedRect(834, 244, 210, 155, 20); g.fillStyle(0xffd8aa, 1); g.fillTriangle(809, 245, 940, 145, 1070, 245);
-    g.fillStyle(0x6b355e, 1); g.fillRoundedRect(146, 470, 180, 78, 35); g.fillStyle(0xffd07d, .8); g.fillCircle(230, 510, 17);
-    for (let i = 0; i < 48; i += 1) { const x = Math.random() * 1200; const y = 360 + Math.random() * 365; g.fillStyle(i % 2 ? 0xf180a9 : 0xffd87d, .85); g.fillCircle(x, y, 4 + Math.random() * 5); }
-    const labels: Array<[number, number, string]> = [[932, 420, 'Our Home'], [230, 565, 'Picnic Garden'], [586, 617, 'Moon Lake'], [1080, 610, 'Magical Forest →']];
-    labels.forEach(([x, y, text]) => this.add.text(x, y, text, { fontFamily: 'Georgia', fontSize: '17px', color: '#fff1d6', stroke: '#402341', strokeThickness: 4 }).setOrigin(.5));
+    g.fillGradientStyle(0x100d25, 0x26133b, 0x5c3151, 0x9b5368, 1); g.fillRect(0, 0, 1200, 760);
+    g.fillStyle(0xf9d998, .14); g.fillCircle(965, 115, 104); g.fillStyle(0x17102b, .92); g.fillCircle(965, 115, 82); g.fillStyle(0xffe8b1, .96); g.fillCircle(951, 103, 66);
+    for (let i = 0; i < 105; i += 1) { const x = (i * 137) % 1200; const y = 30 + ((i * 71) % 330); g.fillStyle(i % 5 === 0 ? 0xffd995 : 0xfff1d0, i % 4 ? .7 : 1); g.fillCircle(x, y, i % 6 === 0 ? 2.5 : 1.1); }
+    g.fillStyle(0x263d46, 1); g.fillEllipse(610, 684, 1550, 410); g.fillStyle(0x18343c, 1); g.fillEllipse(620, 748, 1500, 285);
+    g.fillStyle(0x254f5a, .95); g.fillEllipse(560, 507, 410, 250); g.fillStyle(0x76b0ac, .16); g.fillEllipse(560, 481, 330, 120);
+    g.lineStyle(10, 0xd2a66b, 1); g.beginPath(); g.moveTo(365, 465); g.lineTo(470, 442); g.lineTo(590, 458); g.lineTo(750, 525); g.strokePath(); g.lineStyle(3, 0xffdfa0, .65); g.beginPath(); g.moveTo(365, 453); g.lineTo(470, 430); g.lineTo(590, 446); g.lineTo(750, 513); g.strokePath();
+    this.drawHouse(g, 905, 230); this.drawGarden(g, 205, 520); this.drawTrees(g); this.drawLanterns(g);
+    const labels: Array<[number, number, string, string]> = [[930, 424, 'THE HOME', 'A place for two'], [205, 602, 'PICNIC GARDEN', 'Make a memory'], [562, 650, 'MOON LAKE', 'Sit beneath the stars'], [1080, 614, 'SECRET WOODS', 'Coming soon']];
+    labels.forEach(([x, y, title, subtitle]) => { this.add.text(x, y, title, { fontFamily: 'DM Sans', fontStyle: 'bold', fontSize: '13px', color: '#fff0cf', letterSpacing: 2, stroke: '#161027', strokeThickness: 5 }).setOrigin(.5); this.add.text(x, y + 19, subtitle, { fontFamily: 'DM Sans', fontSize: '10px', color: '#d8c5c2', stroke: '#161027', strokeThickness: 3 }).setOrigin(.5); });
   }
+  private drawHouse(g: Phaser.GameObjects.Graphics, x: number, y: number) { g.fillStyle(0x462b42, 1); g.fillRoundedRect(x - 108, y, 216, 155, 12); g.fillStyle(0x9e5364, 1); g.fillTriangle(x - 136, y + 8, x, y - 104, x + 136, y + 8); g.fillStyle(0xffdca2, .95); g.fillRoundedRect(x - 72, y + 45, 48, 62, 8); g.fillRoundedRect(x + 26, y + 45, 48, 62, 8); g.fillStyle(0x2c1835, 1); g.fillRect(x - 13, y + 72, 28, 83); g.fillStyle(0xffc77a, .3); g.fillCircle(x, y + 33, 75); }
+  private drawGarden(g: Phaser.GameObjects.Graphics, x: number, y: number) { g.fillStyle(0x483450, .9); g.fillEllipse(x, y, 255, 95); for (let i = 0; i < 18; i += 1) { const px = x - 110 + ((i * 47) % 220); const py = y - 22 + ((i * 23) % 50); g.fillStyle(i % 2 ? 0xe98eaa : 0xf6ce84, .88); g.fillCircle(px, py, 5); g.fillStyle(0x6e9f79, .9); g.fillRect(px - 1, py + 4, 2, 16); } }
+  private drawTrees(g: Phaser.GameObjects.Graphics) { for (let i = 0; i < 12; i += 1) { const x = 35 + i * 103; const y = 385 + (i % 3) * 23; g.fillStyle(0x231b32, 1); g.fillRect(x - 5, y, 10, 105); g.fillStyle(i % 2 ? 0x2d554c : 0x365f50, .96); g.fillCircle(x, y - 13, 38); g.fillCircle(x - 22, y + 10, 27); g.fillCircle(x + 23, y + 10, 29); } }
+  private drawLanterns(g: Phaser.GameObjects.Graphics) { for (const [x, y] of [[420, 360], [770, 375], [1130, 350]]) { g.lineStyle(2, 0x24152f, 1); g.lineBetween(x, y - 46, x, y); g.fillStyle(0xffc66f, .22); g.fillCircle(x, y, 28); g.fillStyle(0xffd98e, 1); g.fillRoundedRect(x - 7, y - 7, 14, 16, 3); } }
+
 }
