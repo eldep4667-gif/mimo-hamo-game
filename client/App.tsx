@@ -7,6 +7,8 @@ import { VoiceCall } from './components/VoiceCall.js';
 import { Chat } from './components/Chat.js';
 import { Arcade } from './components/Arcade.js';
 import { DrawingCanvas } from './components/DrawingCanvas.js';
+import { Achievements, ProfileHub } from './components/ProfileHub.js';
+import { LoveCompanion } from './components/LoveCompanion.js';
 import { loadSession, saveProfile, saveSession } from './lib/session.js';
 
 type JoinResponse = { ok: boolean; error?: string; snapshot?: RoomSnapshot; session?: PlayerSession; inviteUrl?: string };
@@ -70,7 +72,7 @@ export function App() {
   };
   return <main className="world-shell">
     <header className="world-header"><a className="brand" href="/" onClick={(event) => { event.preventDefault(); setView('world'); }}><span>♥</span><b>محاميحو &amp; ميادة</b><small>OUR LITTLE WORLD</small></a><div className="room-code"><span>PRIVATE ROOM</span><b>{snapshot.code}</b><button onClick={copyInvite}>Copy invite</button></div><div className="header-actions"><button className={view === 'world' ? 'selected' : ''} onClick={() => setView('world')}>✦ World</button><button className={view === 'adventure' ? 'selected' : ''} onClick={() => setView('adventure')}>🌲 Adventure</button><button className="arcade-button" onClick={() => setArcadeOpen(true)}>Our Arcade <span>♥</span></button></div></header>
-    {view === 'world' ? <section className="world-layout"><div className="game-stage"><Suspense fallback={<Loading />}><WorldGame ref={worldRef} snapshot={snapshot} selfId={selfId} onMove={move} onCollect={(id) => socket.emit('game:heart:collect', id)} onEmote={emote} /></Suspense><GamePrompt snapshot={snapshot} socket={socket} /><MobileControls game={worldRef} onEmote={(value) => worldRef.current?.emote(value)} /></div><aside className="world-sidebar"><LoveProgress points={snapshot.lovePoints} unlocked={snapshot.unlocked} /><MemoryWall memories={snapshot.memories} /><Chat socket={socket} messages={snapshot.messages} selfId={selfId} /></aside></section> : <Suspense fallback={<Loading />}><AdventureScene snapshot={snapshot} selfId={selfId} onMove={move} onCrystal={() => socket.emit('adventure:crystal')} onBack={() => setView('world')} /></Suspense>}
+    {view === 'world' ? <section className="world-layout"><div className="game-stage"><Suspense fallback={<Loading />}><WorldGame ref={worldRef} snapshot={snapshot} selfId={selfId} onMove={move} onCollect={(id) => socket.emit('game:heart:collect', id)} onEmote={emote} /></Suspense><GamePrompt snapshot={snapshot} socket={socket} /><MobileControls game={worldRef} onEmote={(value) => worldRef.current?.emote(value)} /></div><aside className="world-sidebar"><ProfileHub name={self.displayName} points={snapshot.lovePoints} unlocked={snapshot.unlocked} /><Achievements points={snapshot.lovePoints} /><LoveCompanion /><LoveProgress points={snapshot.lovePoints} unlocked={snapshot.unlocked} /><MemoryWall memories={snapshot.memories} /><Chat socket={socket} messages={snapshot.messages} selfId={selfId} /></aside></section> : <Suspense fallback={<Loading />}><AdventureScene snapshot={snapshot} selfId={selfId} onMove={move} onCrystal={() => socket.emit('adventure:crystal')} onBack={() => setView('world')} /></Suspense>}
     <DrawingCanvas socket={socket} active={snapshot.game.kind === 'draw-together'} />
     <VoiceCall socket={socket} self={self} other={other} />
     {arcadeOpen && <Arcade game={snapshot.game} onPlay={startGame} onClose={() => setArcadeOpen(false)} />}

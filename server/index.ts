@@ -3,6 +3,7 @@ import { resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import express from 'express';
 import cors from 'cors';
+import { generateText, gateway } from 'ai';
 import { Server, type Socket } from 'socket.io';
 import type { ChatMessage, GameKind, MemoryCard, PlayerPublic, PlayerSession, ProfileDraft, RoomSnapshot } from '../shared/types.js';
 import { canCollectHeart, emptyGame, makeHeart, resolveAnswer, startGame } from './game.js';
@@ -29,6 +30,20 @@ export function createRealtimeServer(options: { databasePath?: string; origins?:
   app.use(cors({ origin: options.origins ?? originList, credentials: false }));
   app.get('/api/health', (_request, response) => response.json({ ok: true, service: 'our-little-world' }));
   app.get('/api/config', (_request, response) => response.json({ stunUrl: process.env.VITE_STUN_URL ?? 'stun:stun.l.google.com:19302' }));
+  app.post('/api/love-ai', async (request, response) => {
+    const message = typeof request.body?.message === 'string' ? request.body.message.trim().slice(0, 500) : '';
+    if (!message) return response.status(400).json({ error: 'A message is required.' });
+    try {
+      const result = await generateText({
+        model: gateway('anthropic/claude-sonnet-4.6'),
+        system: 'You are Love AI Companion for Mahmihoo and Mayada. Reply warmly in 2 concise sentences, offer one practical long-distance relationship idea, and never claim to be a human.',
+        prompt: message
+      });
+      return response.json({ reply: result.text });
+    } catch {
+      return response.status(503).json({ error: 'Love AI is resting. Try again in a moment.' });
+    }
+  });
 
   const httpServer = createServer(app);
   const io = new Server(httpServer, {
